@@ -1,10 +1,15 @@
-import React from "react";
+//import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Button } from "react-bootstrap";
 
 const Productos = () => {
   return (
-    <div>
-      <h2>Productos</h2>
-    </div>
+    <Container className="mt-3">
+      <Row className="aling-items-center">
+        <Col>
+          <h2><i className="bi-bag-fill me-2"></i> Productos</h2>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
