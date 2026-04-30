@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import FormularioLogin from "../components/login/FormularioLogin";
 import { supabase } from "../database/supabaseconfig";
@@ -14,7 +13,7 @@ const Login = () => {
 
   const iniciarSesion = async () => {
     try {
-      const {data, error} = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: usuario,
         password: contrasena,
       });
@@ -24,7 +23,7 @@ const Login = () => {
         return;
       }
 
-      if(data.user) {
+      if (data.user) {
         localStorage.setItem("usuario-supabase", usuario);
         navegar("/");
       }
@@ -41,19 +40,21 @@ const Login = () => {
     }
   }, [navegar]);
 
+  // 🎨 Nuevo estilo más femenino y moderno
   const estiloContenedor = {
     position: "fixed",
     top: 0,
     left: 0,
     width: "100%",
-    height: "108%",
+    height: "100%",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    background: "linear-gradient(135deg, #FFDEE9, #B5FFFC)",
+    background: "linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%)",
     overflow: "hidden",
     padding: "20px",
-  }
+    fontFamily: "'Poppins', sans-serif",
+  };
 
   return (
     <div style={estiloContenedor}>
