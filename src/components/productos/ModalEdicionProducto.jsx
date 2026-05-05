@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Modal, Form,Button,Row,Col } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Modal, Form, Button, Row, Col } from "react-bootstrap";
 
 const ModalEdicionProducto = ({
   mostrarModalEdicion,
@@ -8,9 +8,9 @@ const ModalEdicionProducto = ({
   manejoCambioInputEdicion,
   manejoCambioArchivoActualizar,
   actualizarProducto,
-  categorias
+  categorias,
 }) => {
-  const[deshabilitado, setDeshabilitado] = useState(false);
+  const [deshabilitado, setDeshabilitado] = useState(false);
 
   const handleActualizar = async () => {
     if (deshabilitado) return;
@@ -34,7 +34,6 @@ const ModalEdicionProducto = ({
       <Modal.Body>
         <Form>
           <Row>
-
             <Col xs={12} md={4}>
               <Form.Group className="mb-3">
                 <Form.Label>Categoría *</Form.Label>
@@ -66,10 +65,9 @@ const ModalEdicionProducto = ({
                 />
               </Form.Group>
             </Col>
-
             <Col xs={12} md={4}>
               <Form.Group className="mb-3">
-                <Form.Label>Precio  de venta*</Form.Label>
+                <Form.Label>Precio de venta *</Form.Label>
                 <Form.Control
                   type="number"
                   step="0.01"
@@ -81,7 +79,6 @@ const ModalEdicionProducto = ({
                 />
               </Form.Group>
             </Col>
-            
             <Col xs={12} md={12}>
               <Form.Group className="mb-3 text-center">
                 <Form.Label>Imagen actual</Form.Label>
@@ -90,7 +87,12 @@ const ModalEdicionProducto = ({
                     <img
                       src={productoEditar.url_imagen}
                       alt="Producto actual"
-                      style={{ maxWidth:"120px",maxHeight:"120px",objectFit:"cover", borderRadius:"6px" }}
+                      style={{
+                        maxWidth: "120px",
+                        maxHeight: "120px",
+                        objectFit: "cover",
+                        borderRadius: "6px",
+                      }}
                     />
                   </div>
                 ) : (
@@ -108,7 +110,7 @@ const ModalEdicionProducto = ({
                   onChange={manejoCambioArchivoActualizar}
                 />
                 <Form.Text className="text-muted">
-                  Si seleccionas una nueva imagen, reemplazará a la actual.
+                  Si seleccionas una nueva imagen, reemplazará la actual
                 </Form.Text>
               </Form.Group>
             </Col>
@@ -126,16 +128,22 @@ const ModalEdicionProducto = ({
                 />
               </Form.Group>
             </Col>
-
           </Row>
         </Form>
-      </Modal.Body> 
+      </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setMostrarModalEdicion(false)}>
+        <Button
+          variant="secondary"
+          onClick={() => setMostrarModalEdicion(false)}
+        >
           Cancelar
         </Button>
-        <Button variant="primary" onClick={handleActualizar} disabled={deshabilitado}>
+        <Button
+          variant="primary"
+          onClick={handleActualizar}
+          disabled={deshabilitado}
+        >
           Actualizar
         </Button>
       </Modal.Footer>

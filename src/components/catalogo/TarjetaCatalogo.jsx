@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Card, Badge, Modal, Button } from "react-bootstrap";
 
 const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
+  // Validación de seguridad para que no rompa si el producto falla
+  if (!producto) return null;
 
   const [mostrarModal, setMostrarModal] = useState(false);
 
@@ -21,7 +23,7 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
         tabIndex={0}
         onClick={() => setMostrarModal(true)}
         onKeyDown={(e) => e.key === "Enter" && setMostrarModal(true)}
-        aria-labelledby={`producto-${producto.id}-title`}
+        aria-labelledby={`producto-${producto.id_producto}-title`}
       >
         <div className="ratio ratio-1x1 bg-light" style={{ overflow: "hidden"}}>
           {producto.url_imagen ? (
@@ -32,7 +34,7 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
               loading="lazy"
               style={{ transition: "transform 0.4s"}}
               onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.1)")}
-              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1")}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
             />
           ) : (
             <div className="d-flex align-items-center justify-content-center h-100 bg-secondary-subtle">
@@ -42,29 +44,29 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
         </div>
         <Card.Body className="d-flex flex-column p-3">
           <Card.Title
-            id={`producto-${producto.id}-title`}
+            id={`producto-${producto.id_producto}-title`}
             className="h6 fw-bold text-dark mb-2"
           >
             {producto.nombre_producto}
           </Card.Title>
-        {descripcion && (
-          <>
-            <Card.Text className="text-muted small flex-grow-1">
+
+          {descripcion && (
+            /* CAMBIO AQUÍ: Añadimos as="div" para evitar el error de validación DOM */
+            <Card.Text as="div" className="text-muted small flex-grow-1">
               {previsualizacionTexto}
               {tieneMasTexto && (
                 <span className="text-primary fw-medium ms-1">
                   {" Leer más"}
                 </span>
               )}
-            </Card.Text>
 
-            <div className="mt-2">
-              <Badge bg="secondary" pill size="sm">
-                {categoriaNombre || "Sin categoría"}
-              </Badge>
-            </div>
-          </>
-        )}
+              <div className="mt-2">
+                <Badge bg="secondary" pill size="sm">
+                  {categoriaNombre || "Sin categoría"}
+                </Badge>
+              </div>
+            </Card.Text>
+          )}
 
           <hr />
 
@@ -100,11 +102,10 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
               )}
             </div>
 
-            {/* Detalles a la derecha */}
             <div className="col-md-7">
               <div className="d-flex align-items-center mb-3">
                 <Badge bg="secondary" pill className="me-2">
-                  {categoriaNombre || "Sin caetegoría"}
+                  {categoriaNombre || "Sin categoría"}
                 </Badge>
               </div>
 
@@ -125,7 +126,7 @@ const TarjetaCatalogo = ({ producto, categoriaNombre }) => {
         </Modal.Body>
 
         <Modal.Footer className="border-0">
-          <Button variant="danger" onClick={() => setMostrarModal(false)}>
+          <Button variant="secondary" onClick={() => setMostrarModal(false)}>
             Cerrar
           </Button>
         </Modal.Footer>

@@ -175,7 +175,7 @@ const Encabezado = () => {
           onHide={() => setMostrarMenu(false)}
         >
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Menú Discosa</Offcanvas.Title>
+            <Offcanvas.Title>Menú Luna</Offcanvas.Title>
           </Offcanvas.Header>
 
           <Offcanvas.Body>

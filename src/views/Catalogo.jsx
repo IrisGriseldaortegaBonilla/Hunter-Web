@@ -5,7 +5,6 @@ import TarjetaCatalogo from "../components/catalogo/TarjetaCatalogo";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
 
 const Catalogo = () => {
-
   const [productos, setProductos] = useState([]);
   const [categorias, setCategorias] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("todas");
@@ -20,20 +19,20 @@ const Catalogo = () => {
         supabase
           .from("productos")
           .select("*")
-          .order("nombre_producto", {ascending: true}),
+          .order("nombre_producto", { ascending: true }),
         supabase
           .from("categorias")
-          .select("*")
+          .select("id_categoria, nombre_categoria")
           .order("nombre_categoria"),
       ]);
 
-      if(resProductos.error) throw resProductos.error;
-      if(resCategorias.error) throw resCategorias.error;
+      if (resProductos.error) throw resProductos.error;
+      if (resCategorias.error) throw resCategorias.error;
 
       setProductos(resProductos.data || []);
       setCategorias(resCategorias.data || []);
     } catch (err) {
-      console.error("Error al cargar catálogo: ", err);
+      console.error("Error al cargar catálogo:", err);
       setError("No se pudieron cargar los productos. Intenta más tarde.");
     } finally {
       setCargando(false);
@@ -49,11 +48,11 @@ const Catalogo = () => {
 
     if (categoriaSeleccionada !== "todas") {
       filtrados = filtrados.filter(
-        (prod) => prod.categoria_producto === parseInt(categoriaSeleccionada)
+        (prod) => prod.categoria_producto === parseInt(categoriaSeleccionada),
       );
     }
 
-    if(textoBusqueda.trim()) {
+    if (textoBusqueda.trim()) {
       const textoLower = textoBusqueda.toLowerCase().trim();
 
       filtrados = filtrados.filter((prod) => {
@@ -80,19 +79,20 @@ const Catalogo = () => {
     setTextoBusqueda(e.target.value);
   };
 
-  //Obtener nombre de categoría
+  // Obtener nombre de categoria
   const obtenerNombreCategoria = (idCategoria) => {
-    const cat = categorias.find((c) => c.id_categoria == idCategoria);
+    const cat = categorias.find((c) => c.id_categoria === idCategoria);
     return cat ? cat.nombre_categoria : "Sin categoría";
   };
 
   return (
     <div className="mt-3 px-1">
+
       <Row className="text-center mb-1">
         <Col>
           <p className="lead text-muted">
             Nuestros productos de belleza
-          </p>
+            </p>
         </Col>
       </Row>
 
@@ -145,7 +145,7 @@ const Catalogo = () => {
       {!cargando && productosFiltrados.length > 0 && (
         <Row className="g-3">
           {productosFiltrados.map((producto) => (
-            <Col xs={6} sm={6} md={4} lg={3} key={producto.id}>
+            <Col xs={6} sm={6} md={4} lg={3} key={producto.id_producto}>
               <TarjetaCatalogo
                 producto={producto}
                 categoriaNombre={obtenerNombreCategoria(producto.categoria_producto)}

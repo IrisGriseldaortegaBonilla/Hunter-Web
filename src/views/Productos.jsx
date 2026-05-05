@@ -4,10 +4,10 @@ import { supabase } from "../database/supabaseconfig";
 import ModalRegistroProducto from "../components/productos/ModalRegistroProducto";
 import NotificacionOperacion from "../components/NotificacionOperacion";
 import CuadroBusquedas from "../components/busquedas/CuadroBusquedas";
+import TablaProductos from "../components/productos/TablaProductos";
+import TarjetaProductos from "../components/productos/TarjetaProductos";
 import ModalEdicionProducto from "../components/productos/ModalEdicionProducto";
 import ModalEliminacionProducto from "../components/productos/ModalEliminacionProducto";
-import ModalEliminacionCategoria from "../components/categorias/ModalEliminacionCategoria";
-import "bootstrap-icons/font/bootstrap-icons.css";
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -17,9 +17,11 @@ const Productos = () => {
   const [cargando, setCargando] = useState(true);
 
   const [mostrarModal, setMostrarModal] = useState(false);
+
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   const [mostrarModalEliminacion, setMostrarModalEliminacion] = useState(false);
 
+  const [productoEditar, setProductoEditar] = useState(null);
   const [productoAEliminar, setProductoAEliminar] = useState(null);
 
   const [nuevoProducto, setNuevoProducto] = useState({
@@ -30,16 +32,6 @@ const Productos = () => {
     archivo: null,
   });
 
-  const [productoEditar, setProductoEditar] = useState({
-    id: "",
-    nombre_producto: "",
-    descripcion_producto: "",
-    categoria_producto: "",
-    precio_venta: "",
-    url_imagen: "",
-    archivo: null,
-  });
-
   const [toast, setToast] = useState({ mostrar: false, mensaje: "", tipo: "" });
 
   const manejoCambioInput = (e) => {
@@ -47,81 +39,12 @@ const Productos = () => {
     setNuevoProducto((prev) => ({ ...prev, [name]: value }));
   };
 
-  const manejoCambioInputEdicion = (e) => {
-    const { name, value } = e.target;
-    setProductoEditar((prev) => ({ ...prev, [name]: value }));
-  };
-
   const manejoCambioArchivo = (e) => {
     const archivo = e.target.files[0];
     if (archivo && archivo.type.startsWith("image/")) {
       setNuevoProducto((prev) => ({ ...prev, archivo }));
-    }
-  };
-
-  const manejoCambioArchivoActualizar = (e) => {
-    const archivo = e.target.files[0];
-    if (archivo && archivo.type.startsWith("image/")) {
-      setProductoEditar((prev) => ({ ...prev, archivo }));
-    }
-  };
-
-  const agregarProducto = async () => {
-    try {
-      if (
-        !nuevoProducto.nombre_producto ||
-        !nuevoProducto.categoria_producto ||
-        !nuevoProducto.precio_venta ||
-        !nuevoProducto.archivo
-      ) {
-        setToast({
-          mostrar: true,
-          mensaje: "Completa todos los campos",
-          tipo: "advertencia",
-        });
-        return;
-      }
-
-      const nombreArchivo = `${Date.now()}_${nuevoProducto.archivo.name}`;
-
-      const { error: errorUpload } = await supabase.storage
-        .from("imagenes_productos")
-        .upload(nombreArchivo, nuevoProducto.archivo);
-
-      if (errorUpload) throw errorUpload;
-
-      const { data } = supabase.storage
-        .from("imagenes_productos")
-        .getPublicUrl(nombreArchivo);
-
-      const { error } = await supabase.from("productos").insert([
-        {
-          nombre_producto: nuevoProducto.nombre_producto,
-          descripcion_producto: nuevoProducto.descripcion_producto,
-          categoria_producto: nuevoProducto.categoria_producto,
-          precio_venta: parseFloat(nuevoProducto.precio_venta),
-          url_imagen: data.publicUrl,
-        },
-      ]);
-
-      if (error) throw error;
-
-      setMostrarModal(false);
-      await cargarProductos();
-
-      setToast({
-        mostrar: true,
-        mensaje: "Producto agregado correctamente",
-        tipo: "exito",
-      });
-
-    } catch (err) {
-      console.error(err);
-      setToast({
-        mostrar: true,
-        mensaje: "Error al agregar producto",
-        tipo: "error",
-      });
+    } else {
+      alert("Selecciona una imagen válida");
     }
   };
 
@@ -144,15 +67,22 @@ const Productos = () => {
 
       const { data, error } = await supabase
         .from("productos")
-        .select("*")
-        .order("id", { ascending: false });
+        .select(
+          `
+          *,
+          Categorias:categoria_producto (
+            id_categoria,
+            nombre_categoria
+          )
+        `,
+        )
+        .order("id_producto", { ascending: true });
 
       if (error) throw error;
 
       setProductos(data || []);
-      setProductosFiltrados(data || []);
     } catch (err) {
-      console.error("Error real:", err.message || err);
+      console.error("Error al cargar productos:", err);
     } finally {
       setCargando(false);
     }
@@ -167,19 +97,102 @@ const Productos = () => {
     if (!textoBusqueda.trim()) {
       setProductosFiltrados(productos);
     } else {
-      const texto = textoBusqueda.toLowerCase();
-      setProductosFiltrados(
-        productos.filter(
-          (p) =>
-            p.nombre_producto?.toLowerCase().includes(texto) ||
-            p.descripcion_producto?.toLowerCase().includes(texto)
-        )
-      );
+      const textoLower = textoBusqueda.toLowerCase();
+
+      const filtrados = productos.filter((prod) => {
+        return (
+          prod.nombre_producto?.toLowerCase().includes(textoLower) ||
+          prod.descripcion_producto?.toLowerCase().includes(textoLower)
+        );
+      });
+
+      setProductosFiltrados(filtrados);
     }
   }, [textoBusqueda, productos]);
 
-  const actualizarProducto = async () => {
+  const agregarProducto = async () => {
     try {
+      if (
+        !nuevoProducto.nombre_producto ||
+        !nuevoProducto.categoria_producto ||
+        !nuevoProducto.precio_venta ||
+        !nuevoProducto.archivo
+      ) {
+        setToast({
+          mostrar: true,
+          mensaje: "Completa todos los campos",
+          tipo: "advertencia",
+        });
+        return;
+      }
+
+      const nombreArchivo = `${Date.now()}_${nuevoProducto.archivo.name}`;
+
+      await supabase.storage
+        .from("imagenes_productos")
+        .upload(nombreArchivo, nuevoProducto.archivo);
+
+      const { data } = supabase.storage
+        .from("imagenes_productos")
+        .getPublicUrl(nombreArchivo);
+
+      await supabase.from("productos").insert([
+        {
+          nombre_producto: nuevoProducto.nombre_producto,
+          descripcion_producto: nuevoProducto.descripcion_producto,
+          categoria_producto: nuevoProducto.categoria_producto,
+          precio_venta: parseFloat(nuevoProducto.precio_venta),
+          url_imagen: data.publicUrl,
+        },
+      ]);
+
+      setMostrarModal(false);
+      await cargarProductos();
+
+      setToast({
+        mostrar: true,
+        mensaje: "Producto agregado correctamente",
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error(err);
+      setToast({
+        mostrar: true,
+        mensaje: "Error al agregar producto",
+        tipo: "error",
+      });
+    }
+  };
+
+  const abrirModalEdicion = (producto) => {
+    setProductoEditar(producto);
+    setMostrarModalEdicion(true);
+  };
+
+  const abrirModalEliminacion = (producto) => {
+    setProductoAEliminar(producto);
+    setMostrarModalEliminacion(true);
+  };
+
+    const actualizarProducto = async () => {
+    try {
+
+      let urlImagenActualizada = productoEditar.url_imagen; 
+      if (productoEditar.archivo) {
+
+        const nombreArchivo = `${Date.now()}_${productoEditar.archivo.name}`;
+
+        await supabase.storage
+          .from("imagenes_productos")
+          .upload(nombreArchivo, productoEditar.archivo);
+
+        const { data } = supabase.storage
+          .from("imagenes_productos")
+          .getPublicUrl(nombreArchivo);
+
+        urlImagenActualizada = data.publicUrl; 
+      }
+
       const { error } = await supabase
         .from("productos")
         .update({
@@ -187,66 +200,55 @@ const Productos = () => {
           descripcion_producto: productoEditar.descripcion_producto,
           categoria_producto: productoEditar.categoria_producto,
           precio_venta: parseFloat(productoEditar.precio_venta),
-          url_imagen: productoEditar.url_imagen,
+          url_imagen: urlImagenActualizada, 
         })
-        .eq("id", productoEditar.id);
+        .eq("id_producto", productoEditar.id_producto);
 
       if (error) throw error;
 
+      setMostrarModalEdicion(false);
       await cargarProductos();
 
-      setProductoEditar({
-        id: "",
-        nombre_producto: "",
-        descripcion_producto: "",
-        categoria_producto: "",
-        precio_venta: "",
-        url_imagen: "",
-        archivo: null,
+      setToast({
+        mostrar: true,
+        mensaje: "Producto actualizado",
+        tipo: "exito",
       });
 
-      setToast({ mostrar: true, mensaje: "Producto actualizado", tipo: "exito" });
     } catch (err) {
       console.error(err);
     }
   };
 
   const eliminarProducto = async () => {
-    if (!productoAEliminar) return;
-
     try {
-      setMostrarModalEliminacion(false);
-
       const { error } = await supabase
         .from("productos")
         .delete()
-        .eq("id", productoAEliminar.id);
+        .eq("id_producto", productoAEliminar.id_producto);
 
       if (error) throw error;
 
+      setMostrarModalEliminacion(false);
       await cargarProductos();
 
       setToast({
         mostrar: true,
-        mensaje: "Producto eliminado correctamente",
+        mensaje: "Producto eliminado",
         tipo: "exito",
       });
-
     } catch (err) {
       console.error(err);
-      setToast({
-        mostrar: true,
-        mensaje: "Error al eliminar producto",
-        tipo: "error",
-      });
     }
   };
 
   return (
     <Container className="mt-3">
+      <Row className="align-items-center mb-3">
+        <Col>
+          <h3>Productos</h3>
+        </Col>
 
-      <Row className="mb-3">
-        <Col><h3>Productos</h3></Col>
         <Col className="text-end">
           <Button onClick={() => setMostrarModal(true)}>
             <i className="bi-plus-lg"></i> Nuevo
@@ -263,83 +265,33 @@ const Productos = () => {
         </Col>
       </Row>
 
-      <Row>
-        <Col>
-          {cargando ? (
-            <div className="text-center">
-              <Spinner />
-            </div>
-          ) : productosFiltrados.length === 0 ? (
-            <Alert>No hay productos</Alert>
-          ) : (
-            <table className="table table-hover">
-              <thead className="table-dark">
-                <tr>
-                  <th>Imagen</th>
-                  <th>Nombre</th>
-                  <th>Categoría</th> {/* 👈 CAMBIO */}
-                  <th>Precio</th>
-                  <th className="text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {productosFiltrados.map((p) => (
-                  <tr key={p.id}>
-                    <td>
-                      <img
-                        src={p.url_imagen}
-                        width="60"
-                        height="60"
-                        style={{ objectFit: "cover", borderRadius: "8px" }}
-                      />
-                    </td>
+      {cargando ? (
+        <div className="text-center">
+          <Spinner />
+        </div>
+      ) : productosFiltrados.length === 0 ? (
+        <Alert>No hay productos</Alert>
+      ) : (
+        <Row>
+          <Col xs={12} className="d-lg-none">
+            <TarjetaProductos
+              productos={productosFiltrados}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
 
-                    <td>{p.nombre_producto}</td>
+          <Col lg={12} className="d-none d-lg-block">
+            <TablaProductos
+              productos={productosFiltrados}
+              abrirModalEdicion={abrirModalEdicion}
+              abrirModalEliminacion={abrirModalEliminacion}
+            />
+          </Col>
+        </Row>
+      )}
 
-                    <td>
-                      {
-                        categorias.find(c => c.id_categoria === p.categoria_producto)?.nombre_categoria
-                        || "Sin categoría"
-                      }
-                    </td>
-
-                    <td>${p.precio_venta}</td>
-
-                    <td>
-                      <div className="d-flex gap-2 justify-content-center">
-
-                        <Button
-                          size="sm"
-                          variant="outline-warning"
-                          onClick={() => {
-                            setProductoEditar(p);
-                            setMostrarModalEdicion(true);
-                          }}
-                        >
-                          <i className="bi-pencil-fill"></i>
-                        </Button>
-
-                        <Button
-                          size="sm"
-                          variant="outline-danger"
-                          onClick={() => {
-                            setProductoAEliminar(p);
-                            setMostrarModalEliminacion(true);
-                          }}
-                        >
-                          <i className="bi-trash-fill"></i>
-                        </Button>
-
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </Col>
-      </Row>
-
+      {/* MODALES */}
       <ModalRegistroProducto
         mostrarModal={mostrarModal}
         setMostrarModal={setMostrarModal}
@@ -353,18 +305,19 @@ const Productos = () => {
       <ModalEdicionProducto
         mostrarModalEdicion={mostrarModalEdicion}
         setMostrarModalEdicion={setMostrarModalEdicion}
-        productoEditar={productoEditar}
-        manejoCambioInputEdicion={manejoCambioInputEdicion}
-        manejoCambioArchivoActualizar={manejoCambioArchivoActualizar}
+        productoEditar={productoEditar || {}}
+        manejoCambioInputEdicion={(e) => {
+          const { name, value } = e.target;
+          setProductoEditar((prev) => ({ ...prev, [name]: value }));
+        }}
+        manejoCambioArchivoActualizar={(e) => {
+          const archivo = e.target.files[0];
+          if (archivo) {
+            setProductoEditar((prev) => ({ ...prev, archivo }));
+          }
+        }}
         actualizarProducto={actualizarProducto}
         categorias={categorias}
-      />
-
-      <ModalEliminacionCategoria
-        mostrarModalEliminacion={mostrarModalEliminacion}
-        setMostrarModalEliminacion={setMostrarModalEliminacion}
-        eliminarCategoria={eliminarProducto}
-        categoria={productoAEliminar}
       />
 
       <ModalEliminacionProducto
