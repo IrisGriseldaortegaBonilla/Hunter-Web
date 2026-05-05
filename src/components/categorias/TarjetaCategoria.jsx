@@ -27,7 +27,7 @@ const TarjetaCategoria = ({
     const alternarTarjetaActiva = (id) => {
         setIdTarjetaActiva((anterior) => (anterior === id ? null : id));
     };
-
+ 
     return (
         <>
             {cargando ? (
