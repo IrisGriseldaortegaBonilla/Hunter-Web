@@ -1,7 +1,6 @@
-import {BrowserRouter as Router, Routes, Route} from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import Encabezado from "./components/navegacion/Encabezado";
-
 import Inicio from "./views/Inicio.jsx";
 import Categorias from "./views/Categorias.jsx";
 import Catalogo from "./views/Catalogo.jsx";
@@ -9,32 +8,34 @@ import Productos from "./views/Productos.jsx";
 import Login from "./views/Login.jsx";
 import RutaProtegida from './components/rutas/RutaProtegida';
 import Pagina404 from './views/Pagina404';
-
+import Empleados from './views/Empleados';
+import Permisos from './views/Permisos';
 import './App.css'
 
 const App = () => {
-return (
-  <Router>
+  return (
+    <Router>
 
-  <Encabezado />
+      <Encabezado />
 
-  <main className="margen-superior-main">
-    <Routes>
+      <main className="margen-superior-main">
+        <Routes>
 
-      <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
-      <Route path="/" element={<RutaProtegida><Inicio /></RutaProtegida>} />
-      <Route path="/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
-      <Route path="/catalogo" element={<Catalogo />} />
-      <Route path="/productos" element={<RutaProtegida><Productos /></RutaProtegida>} />
+          <Route path="/" element={<RutaProtegida><Inicio /></RutaProtegida>} />
+          <Route path="/categorias" element={<RutaProtegida><Categorias /></RutaProtegida>} />
+          <Route path="/catalogo" element={<Catalogo />} />
+          <Route path="/productos" element={<RutaProtegida><Productos /></RutaProtegida>} />
+          <Route path="/empleados" element={<RutaProtegida><Empleados /></RutaProtegida>} />
+          <Route path="/permisos" element={<RutaProtegida><Permisos /></RutaProtegida>} />
+          <Route path="*" element={<Pagina404 />} />
 
-      <Route path="*" element={<Pagina404 />} />
+        </Routes>
+      </main>
+    </Router>
 
-    </Routes>
-  </main>
-</Router>
-
-);
+  );
 
 }
 
