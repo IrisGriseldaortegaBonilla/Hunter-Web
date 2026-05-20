@@ -6,15 +6,15 @@ const ModalEdicionPermisos = ({
   setMostrar,
   rolEditar,
   setRolEditar,
-  guardarCambios
+  guardarCambios,
 }) => {
   const actualizarSwitch = (permisoKey, valor) => {
-    setRolEditar(prev => ({
+    setRolEditar((prev) => ({
       ...prev,
       permisos: {
         ...prev.permisos,
-        [permisoKey]: valor
-      }
+        [permisoKey]: valor,
+      },
     }));
   };
 
@@ -45,7 +45,9 @@ const ModalEdicionPermisos = ({
         </Row>
 
         {Object.keys(rolEditar.permisos || {}).length === 0 && (
-          <p className="text-center text-muted">No hay permisos definidos para este rol.</p>
+          <p className="text-center text-muted">
+            No hay permisos definidos para este rol.
+          </p>
         )}
       </Modal.Body>
       <Modal.Footer>

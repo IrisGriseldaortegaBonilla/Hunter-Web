@@ -29,7 +29,11 @@ const Permisos = () => {
       setRoles(data || []);
       setRolesFiltrados(data || []);
     } catch (err) {
-      setToast({ mostrar: true, mensaje: "Error al cargar permisos", tipo: "error" });
+      setToast({
+        mostrar: true,
+        mensaje: "Error al cargar permisos",
+        tipo: "error",
+      });
       console.error(err);
     } finally {
       setCargando(false);
@@ -46,9 +50,10 @@ const Permisos = () => {
       setRolesFiltrados(roles);
     } else {
       const texto = textoBusqueda.toLowerCase();
-      const filtrados = roles.filter(r => 
-        r.rol.toLowerCase().includes(texto) || 
-        (r.descripcion || "").toLowerCase().includes(texto)
+      const filtrados = roles.filter(
+        (r) =>
+          r.rol.toLowerCase().includes(texto) ||
+          (r.descripcion || "").toLowerCase().includes(texto),
       );
       setRolesFiltrados(filtrados);
     }
@@ -75,10 +80,14 @@ const Permisos = () => {
       setToast({
         mostrar: true,
         mensaje: `Permisos de ${rolEditar.rol} actualizados correctamente`,
-        tipo: "exito"
+        tipo: "exito",
       });
     } catch (err) {
-      setToast({ mostrar: true, mensaje: "Error al actualizar permisos", tipo: "error" });
+      setToast({
+        mostrar: true,
+        mensaje: "Error al actualizar permisos",
+        tipo: "error",
+      });
     }
   };
 
@@ -86,7 +95,9 @@ const Permisos = () => {
     <Container className="mt-3">
       <Row className="align-items-center mb-3">
         <Col>
-          <h3><i className="bi bi-shield-lock-fill me-2"></i>Gestión de Permisos</h3>
+          <h3>
+            <i className="bi bi-shield-lock-fill me-2"></i>Gestión de Permisos
+          </h3>
         </Col>
       </Row>
 
@@ -109,15 +120,15 @@ const Permisos = () => {
       ) : (
         <Row>
           <Col xs={12} className="d-lg-none">
-            <TarjetaPermisos 
-              roles={rolesFiltrados} 
-              abrirModalEdicion={abrirModalEdicion} 
+            <TarjetaPermisos
+              roles={rolesFiltrados}
+              abrirModalEdicion={abrirModalEdicion}
             />
           </Col>
           <Col lg={12} className="d-none d-lg-block">
-            <TablaPermisos 
-              roles={rolesFiltrados} 
-              abrirModalEdicion={abrirModalEdicion} 
+            <TablaPermisos
+              roles={rolesFiltrados}
+              abrirModalEdicion={abrirModalEdicion}
             />
           </Col>
         </Row>

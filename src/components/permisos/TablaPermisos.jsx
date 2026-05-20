@@ -15,7 +15,9 @@ const TablaPermisos = ({ roles, abrirModalEdicion }) => {
       <tbody>
         {roles.map((rol) => (
           <tr key={rol.id_permiso}>
-            <td><strong>{rol.rol}</strong></td>
+            <td>
+              <strong>{rol.rol}</strong>
+            </td>
             <td>{rol.descripcion || "-"}</td>
             <td className="text-center">
               <Badge bg="info">

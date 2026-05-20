@@ -8,10 +8,13 @@ const FormularioLogin = ({
   setUsuario,
   setContrasena,
   iniciarSesion,
-  cargando
+  cargando,
 }) => {
   return (
-    <Card style={{ minWidth: "320px", maxWidth: "400px", width: "100%" }} className="p-4 shadow-lg">
+    <Card
+      style={{ minWidth: "320px", maxWidth: "400px", width: "100%" }}
+      className="p-4 shadow-lg"
+    >
       <Card.Body>
         <h3 className="text-center mb-4">Iniciar Sesión</h3>
 

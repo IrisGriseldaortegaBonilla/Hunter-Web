@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../database/supabaseconfig';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { supabase } from "../database/supabaseconfig";
 
 const AuthContext = createContext();
 
@@ -12,12 +12,12 @@ export const AuthProvider = ({ children }) => {
     if (!rol) return;
 
     const { data, error } = await supabase
-      .from('permisos')
-      .select('permisos')
-      .eq('rol', rol)
-      .maybeSingle();
+      .from("permisos")
+      .select("permisos")
+      .eq("rol", rol)
+      .single();
 
-      console.log("Permisos cargados para rol:", rol, data);
+    console.log("Permisos cargados para rol:", rol, data);
 
     if (error) {
       console.error("Error al cargar permisos:", error);
@@ -28,18 +28,19 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data: authData, error: authError } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (authError) throw authError;
 
     // Obtener rol del empleado
     const { data: empleado, error: empError } = await supabase
-      .from('empleados')
-      .select('tipo_empleado')
-      .eq('email', email)
+      .from("empleados")
+      .select("tipo_empleado")
+      .eq("email", email)
       .single();
 
     if (empError || !empleado) {
@@ -48,10 +49,10 @@ export const AuthProvider = ({ children }) => {
     }
 
     localStorage.setItem("usuario-supabase", email);
-    
+
     setUsuario({
       email: email,
-      rol: empleado.tipo_empleado
+      rol: empleado.tipo_empleado,
     });
 
     await cargarPermisos(empleado.tipo_empleado);
@@ -69,19 +70,19 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const cargarSesionInicial = async () => {
       const usuarioGuardado = localStorage.getItem("usuario-supabase");
-      
+
       if (usuarioGuardado) {
         try {
           const { data: empleado, error } = await supabase
-            .from('empleados')
-            .select('tipo_empleado')
-            .eq('email', usuarioGuardado)
+            .from("empleados")
+            .select("tipo_empleado")
+            .eq("email", usuarioGuardado)
             .single();
 
           if (empleado && !error) {
             setUsuario({
               email: usuarioGuardado,
-              rol: empleado.tipo_empleado
+              rol: empleado.tipo_empleado,
             });
             await cargarPermisos(empleado.tipo_empleado);
           } else {
@@ -102,14 +103,16 @@ export const AuthProvider = ({ children }) => {
   const tienePermiso = (permiso) => !!permisos[permiso];
 
   return (
-    <AuthContext.Provider value={{
-      usuario,
-      permisos,
-      tienePermiso,
-      login,
-      logout,
-      cargando
-    }}>
+    <AuthContext.Provider
+      value={{
+        usuario,
+        permisos,
+        tienePermiso,
+        login,
+        logout,
+        cargando,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -118,7 +121,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider');
+    throw new Error("useAuth debe usarse dentro de un AuthProvider");
   }
   return context;
 };
