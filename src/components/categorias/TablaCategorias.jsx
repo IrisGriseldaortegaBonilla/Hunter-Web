@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from "react";
-import { Table, Spinner, Button } from "react-bootstrap";
+import React from "react";
+import { Table, Button } from "react-bootstrap";
 import "bootstrap-icons/font/bootstrap-icons.css";
 
 const TablaCategorias = ({
   categorias,
   abrirModalEdicion,
   abrirModalEliminacion,
+  generarPDFCategoria,
 }) => {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (categorias && categorias.length > 0) {
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
-  }, [categorias]);
+  const hayCategorias = Array.isArray(categorias) && categorias.length > 0;
 
   return (
     <>
-      {loading ? (
-        <div className="text-center">
-          <h4>Cargando categorías...</h4>
-          <Spinner animation="border" variant="success" role="status" />
+      {!hayCategorias ? (
+        <div className="text-center text-muted py-4">
+          <h5 className="mb-0">No hay categorías registradas.</h5>
         </div>
       ) : (
         <Table striped borderless hover responsive size="sm">
@@ -58,6 +50,14 @@ const TablaCategorias = ({
                     onClick={() => abrirModalEliminacion(categoria)}
                   >
                     <i className="bi bi-trash"></i>
+                  </Button>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="m-1"
+                    onClick={() => generarPDFCategoria(categoria)}
+                  >
+                    <i className="bi bi-file-earmark-pdf"></i>
                   </Button>
                 </td>
               </tr>
