@@ -98,6 +98,16 @@ const Encabezado = () => {
               </Nav.Link>
             )}
 
+            {tienePermiso("ver_clientes") && (
+              <Nav.Link
+                onClick={() => manejarNavegacion("/clientes")}
+                className={mostrarMenu ? "color-texto-marca" : "text-white"}
+              >
+                <i className="bi-person-lines-fill me-2"></i>
+                <strong>Clientes</strong>
+              </Nav.Link>
+            )}
+
             {tienePermiso("ver_empleados") && (
               <Nav.Link
                 onClick={() => manejarNavegacion("/empleados")}
@@ -107,6 +117,14 @@ const Encabezado = () => {
                 <strong>Empleados</strong>
               </Nav.Link>
             )}
+
+            <Nav.Link
+              onClick={() => manejarNavegacion("/ventas")}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              <i className="bi-cart-fill me-2"></i>
+              <strong>Ventas</strong>
+            </Nav.Link>
 
             {/* Opción para navegar a la vista de Permisos */}
             {tienePermiso("ver_permisos") && (
