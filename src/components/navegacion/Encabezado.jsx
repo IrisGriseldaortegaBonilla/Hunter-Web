@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
 import logo from "../../assets/logo.png";
+import ChatIA from "../ia/ChatIA";
 
 // 6. Asegurese de importar AuthContext en su componente Encabezado:
 import { useAuth } from "../../context/AuthContext";
 
+
 const Encabezado = () => {
   const [mostrarMenu, setMostrarMenu] = useState(false);
+  const [mostrarChatIA, setMostrarChatIA] = useState(false);
   const navigate = useNavigate();
   const location = useLocation(); //Para detectar la ruta actual
 
@@ -49,6 +52,12 @@ const Encabezado = () => {
         </Nav.Link>
       </Nav>
     );
+
+    <Nav.Link onClick={() => setMostrarChatIA(true)} className="text-white">
+      <i className="bi bi-robot me-2"></i>
+    </Nav.Link>
+
+
   } else {
     if (esCatalogo) {
       contenidoMenu = (
@@ -65,6 +74,7 @@ const Encabezado = () => {
     } else {
       contenidoMenu = (
         <>
+
           <Nav className="ms-auto pe-2">
             {/* 9. Utilice la función tienePermiso para valdiar y envolver las opciones de navegación */}
 
@@ -77,6 +87,18 @@ const Encabezado = () => {
                 <strong>Inicio</strong>
               </Nav.Link>
             )}
+
+            <Nav.Link
+              onClick={() => {
+                setMostrarChatIA(true);
+                setMostrarMenu(false);
+              }}
+              className={mostrarMenu ? "color-texto-marca" : "text-white"}
+            >
+              <i className="bi bi-robot me-2"></i>
+              <strong>Asistente IA</strong>
+            </Nav.Link>
+
 
             {tienePermiso("ver_categorias") && (
               <Nav.Link
@@ -126,6 +148,7 @@ const Encabezado = () => {
               <strong>Ventas</strong>
             </Nav.Link>
 
+
             {/* Opción para navegar a la vista de Permisos */}
             {tienePermiso("ver_permisos") && (
               <Nav.Link
@@ -158,6 +181,7 @@ const Encabezado = () => {
             <hr />
           </Nav>
 
+
           {/*Información del usuario y boton cerrar sesión dentro del Offcanvas */}
           {mostrarMenu && (
             <div className="mt-3 p-3 rounded bg-light text-dark">
@@ -189,6 +213,8 @@ const Encabezado = () => {
       className="color-navbar shadow-lg"
       variant="dark"
     >
+
+      <ChatIA mostrar={mostrarChatIA} onCerrar={() => setMostrarChatIA(false)} />
       <Container>
         <Navbar.Brand
           onClick={() => manejarNavegacion(esCatalogo ? "/catalogo" : "/")}
