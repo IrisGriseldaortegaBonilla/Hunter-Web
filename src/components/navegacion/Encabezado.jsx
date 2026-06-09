@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Container, Nav, Navbar, Offcanvas } from "react-bootstrap";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/Logo.png";
 import ChatIA from "../ia/ChatIA";
 
 // 6. Asegurese de importar AuthContext en su componente Encabezado:
