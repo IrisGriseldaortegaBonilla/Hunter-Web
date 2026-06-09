@@ -6,6 +6,8 @@ const TarjetaProductos = ({
   productos,
   abrirModalEdicion,
   abrirModalEliminacion,
+  copiarProducto,
+  generarQRImagen,
 }) => {
   const [cargando, setCargando] = useState(true);
   const [idTarjetaActiva, setIdTarjetaActiva] = useState(null);
@@ -118,6 +120,32 @@ const TarjetaProductos = ({
                       }}
                     >
                       <div className="d-flex gap-2">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            generarQRImagen(producto);
+                            setIdTarjetaActiva(null);
+                          }}
+                          title="Generar código QR de la imagen"
+                        >
+                          <i className="bi bi-qr-code"></i>
+                        </Button>
+
+                        <Button
+                          variant="success"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copiarProducto(producto);
+                            setIdTarjetaActiva(null);
+                          }}
+                          title="Copiar al portapapeles"
+                        >
+                          <i className="bi bi-clipboard"></i>
+                        </Button>
+
                         <Button
                           variant="warning"
                           size="sm"

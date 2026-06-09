@@ -48,6 +48,30 @@ const Categorias = () => {
     descripcion_categoria: "",
   });
 
+  const copiarCategoria = async (categoria) => {
+    if (!categoria) return;
+
+    const texto = `ID: ${categoria.id_categoria}
+Categoría: ${categoria.nombre_categoria}
+Descripción: ${categoria.descripcion_categoria || 'Sin descripción'}`;
+
+    try {
+      await navigator.clipboard.writeText(texto);
+      setToast({
+        mostrar: true,
+        mensaje: `Categoría "${categoria.nombre_categoria}" copiada al portapapeles`,
+        tipo: "exito",
+      });
+    } catch (err) {
+      console.error("Error al copiar:", err);
+      setToast({
+        mostrar: true,
+        mensaje: "No se pudo copiar al portapapeles",
+        tipo: "error",
+      });
+    }
+  };
+
   const categoriasPaginadas = categoriasFiltradas.slice(
     (paginaActual - 1) * registrosPorPagina,
     paginaActual * registrosPorPagina
@@ -372,12 +396,16 @@ const Categorias = () => {
   return (
     <Container className="mt-3">
       <Row className="align-items-center mb-3">
-        <Col xs={9} sm={7} md={7} lg={7} className="d-flex align-items-center">
+        <Col xs={12} sm={6} md={6} lg={6} className="d-flex align-items-center mb-2 mb-sm-0">
           <h3 className="mb-0">
             <i className="bi-bookmark-plus-fill me-2"></i> Categorías
           </h3>
         </Col>
-        <Col xs={3} sm={5} md={5} lg={5} className="text-end">
+        <Col xs={12} sm={6} md={6} lg={6} className="text-end d-flex gap-2 justify-content-sm-end justify-content-start">
+          <Button variant="primary" onClick={abrirModalCorreo} size="md">
+            <i className="bi bi-envelope"></i>
+            <span className="d-none d-sm-inline ms-2">Enviar por Correo</span>
+          </Button>
           <Button
             onClick={() => setMostrarModal(true)}
             size="md"
@@ -423,6 +451,7 @@ const Categorias = () => {
                 categorias={categoriasPaginadas} 
                 abrirModalEdicion={abrirModalEdicion}
                 abrirModalEliminacion={abrirModalEliminacion}
+                copiarCategoria={copiarCategoria}
               />
             </Col>
             <Col lg={12} className="d-none d-lg-block">
@@ -432,6 +461,7 @@ const Categorias = () => {
                 abrirModalEdicion={abrirModalEdicion}
                 abrirModalEliminacion={abrirModalEliminacion}
                 generarPDFCategoria={generarPDFCategoria}
+                copiarCategoria={copiarCategoria}
               />
             </Col>
           </Row>
@@ -449,28 +479,7 @@ const Categorias = () => {
         </>
       )}
 
-        <Row className="align-items-center mb-3">
-        <Col xs={8} sm={8} md={8} lg={8} className="d-flex align-items-center">
-          <h3 className="mb-0">
-            <i className="bi-bookmark-plus-fill me-2"></i> Categorías
-          </h3>
-        </Col>
-        <Col xs={2} sm={2} md={2} lg={2} className="text-end">
-          <Button variant="primary" onClick={abrirModalCorreo} size="md">
-            <i className="bi bi-envelope"></i>
-            <span className="d-none d-lg-inline ms-2">Enviar por Correo</span>
-          </Button>
-        </Col>
-        <Col xs={2} sm={2} md={2} lg={2} className="text-end">
-          <Button
-            onClick={() => setMostrarModal(true)}
-            size="md"
-          >
-            <i className="bi-plus-lg"></i>
-            <span className="d-none d-lg-inline ms-2">Nueva Categoría</span>
-          </Button>
-        </Col>
-      </Row>
+
 
 
       {cargando && (

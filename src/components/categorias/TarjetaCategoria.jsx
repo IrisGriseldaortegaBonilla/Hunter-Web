@@ -5,7 +5,8 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 const TarjetaCategoria = ({
     categorias,
     abrirModalEdicion,
-    abrirModalEliminacion
+    abrirModalEliminacion,
+    copiarCategoria
 }) => {
 
     const [cargando, setCargando] = useState(true);
@@ -99,6 +100,19 @@ const TarjetaCategoria = ({
                                             className="d-flex gap-2 tarjeta-categoria-botones-capa"
                                             onClick={(e) => e.stopPropagation()}
                                         >
+                                            <Button
+                                                variant="outline-success"
+                                                size="sm"
+                                                onClick={() => {
+                                                    copiarCategoria(categoria);
+                                                    setIdTarjetaActiva(null);
+                                                }}
+                                                title="Copiar al portapapeles"
+                                                aria-label={`Copiar ${categoria.nombre_categoria}`}
+                                            >
+                                                <i className="bi bi-clipboard"></i>
+                                            </Button>
+
                                             <Button
                                                 variant="outline-warning"
                                                 size="sm"
